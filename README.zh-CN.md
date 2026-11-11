@@ -169,6 +169,15 @@ jobs:
 
 PkgSift 自己直接访问官方注册表，不受你本机 `npm config registry` 影响。如果网络需要走镜像，再用上面的变量覆盖。
 
+国内网络直连 `pypi.org` 可能较慢（JSON 接口可能超过 10 秒），建议指定镜像：
+
+```bash
+export PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn
+# 或 https://mirrors.cloud.tencent.com/pypi
+```
+
+查询超时的依赖会显示 `UNKNOWN`，退出码为 2，并明确提示「Scan incomplete — this is not a pass」，不会当成通过。
+
 ## 常见问题
 
 **会不会上传我的代码？**
@@ -176,6 +185,9 @@ PkgSift 自己直接访问官方注册表，不受你本机 `npm config registry
 
 **会不会执行被检查的包？**
 不会。不下载、不安装、不运行。只看注册表元数据。
+
+**为什么出现 `UNKNOWN`？**
+某个依赖查询注册表超时或失败，这次扫描不完整，退出码是 2，不是通过。重试、换镜像（见上方配置）或稍后再跑。
 
 **和 SCA / Dependabot 有什么区别？**
 它们查已知漏洞和许可证；PkgSift 查「这个包该不该装」，重点是不存在、拼写抢注、新包和安装脚本。两者互补。

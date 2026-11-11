@@ -122,6 +122,13 @@ SARIF upload to a private repository requires GitHub Code Security; the SARIF fi
 
 Use `--no-cache` to bypass the cache. Registry overrides also make offline testing possible.
 
+On slow networks (for example mainland China), point PyPI at a mirror. Otherwise a lookup can exceed the 10s timeout and the scan reports `UNKNOWN` with exit code 2 instead of passing:
+
+```bash
+export PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn
+# or https://mirrors.cloud.tencent.com/pypi
+```
+
 ## How the baselines work
 
 - npm: [LeoDog896/npm-rank](https://github.com/LeoDog896/npm-rank), ranked by download count and deduplicated. The top 3000 are typosquat targets; the rest are treated as established packages and never flagged.
