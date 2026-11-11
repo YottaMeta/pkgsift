@@ -1,5 +1,10 @@
 # PkgSift
 
+[![npm version](https://img.shields.io/npm/v/@yottameta/pkgsift.svg)](https://www.npmjs.com/package/@yottameta/pkgsift)
+[![CI](https://github.com/YottaMeta/pkgsift/actions/workflows/ci.yml/badge.svg)](https://github.com/YottaMeta/pkgsift/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+
 **Sift before you install.**
 
 PkgSift checks dependency manifests for packages that do not exist, names that look like typosquats, brand-new packages, and install-time scripts — using only public registry metadata. It runs before `npm install` / `pip install`, so hallucinated and slopsquatted dependencies never reach your lockfile.
