@@ -129,6 +129,14 @@ export PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn
 # or https://mirrors.cloud.tencent.com/pypi
 ```
 
+Windows CMD (current window only):
+
+```cmd
+set "PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn"
+```
+
+Use `setx` and reopen CMD to persist it.
+
 ## How the baselines work
 
 - npm: [LeoDog896/npm-rank](https://github.com/LeoDog896/npm-rank), ranked by download count and deduplicated. The top 3000 are typosquat targets; the rest are treated as established packages and never flagged.

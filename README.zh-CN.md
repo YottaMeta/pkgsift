@@ -169,12 +169,22 @@ jobs:
 
 PkgSift 自己直接访问官方注册表，不受你本机 `npm config registry` 影响。如果网络需要走镜像，再用上面的变量覆盖。
 
-国内网络直连 `pypi.org` 可能较慢（JSON 接口可能超过 10 秒），建议指定镜像：
+国内网络直连 `pypi.org` 可能较慢（JSON 接口可能超过 10 秒），建议指定镜像。
+
+Git Bash / macOS / Linux：
 
 ```bash
 export PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn
 # 或 https://mirrors.cloud.tencent.com/pypi
 ```
+
+Windows CMD（只对当前窗口生效）：
+
+```cmd
+set "PKGSIFT_PYPI_REGISTRY=https://pypi.tuna.tsinghua.edu.cn"
+```
+
+长期生效用 `setx PKGSIFT_PYPI_REGISTRY "https://pypi.tuna.tsinghua.edu.cn"`，然后重新打开 CMD 窗口。
 
 查询超时的依赖会显示 `UNKNOWN`，退出码为 2，并明确提示「Scan incomplete — this is not a pass」，不会当成通过。
 
