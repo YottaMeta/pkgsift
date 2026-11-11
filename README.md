@@ -58,6 +58,20 @@ npm install --save-dev @yottameta/pkgsift
 }
 ```
 
+## Which directory is scanned?
+
+- CLI: `scan .` scans the current working directory; `scan path/to/project` scans that directory. PkgSift never scans its own install location. The `under ...` line in the output is the resolved root.
+- Manifests are discovered recursively below that path (with `node_modules` skipped). In a monorepo, pass the subdirectory you want.
+- GitHub Action: `path` is relative to the repository checked out by `actions/checkout` (`GITHUB_WORKSPACE`), not the action's own repository.
+
+```yaml
+- uses: YottaMeta/pkgsift@action-v1
+  with:
+    path: apps/web
+```
+
+Use one step per subproject, or pass the repository root and let PkgSift discover manifests.
+
 ## Output formats
 
 ```bash

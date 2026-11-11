@@ -59,6 +59,20 @@ npm run deps:sift
 
 > 不要把它放进 `preinstall` / `postinstall`：安装过程中 bin 链接可能还没建好，容易失败。用独立脚本或 CI 步骤。
 
+## 扫描的是哪个目录？
+
+- CLI：`scan .` 扫描**当前工作目录**；`scan path/to/project` 扫描指定目录。它不会扫描自己安装在哪里，输出里的 `under ...` 就是实际根目录。
+- 目录下的清单会被递归发现（跳过 `node_modules`）。monorepo 如果只想看某个子项目，直接传子目录。
+- GitHub Action：`path` 相对于 `actions/checkout` 检出的仓库根目录（`GITHUB_WORKSPACE`），不是 Action 自己的仓库。
+
+```yaml
+- uses: YottaMeta/pkgsift@action-v1
+  with:
+    path: apps/web
+```
+
+多个子项目就写多个 step，或传仓库根目录让 PkgSift 递归找清单。
+
 ## 输出怎么看
 
 示例（有阻断项时）：
