@@ -1,0 +1,60 @@
+{
+  "name": "@yottameta/pkgsift",
+  "version": "0.1.0",
+  "description": "Sift before you install — catch hallucinated and typosquatted dependencies before npm/pip install.",
+  "keywords": [
+    "security",
+    "supply-chain",
+    "slopsquatting",
+    "dependencies",
+    "cli"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YottaMeta/pkgsift.git"
+  },
+  "homepage": "https://github.com/YottaMeta/pkgsift#readme",
+  "bugs": {
+    "url": "https://github.com/YottaMeta/pkgsift/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "pkgsift": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "data:popular": "node scripts/build-popular.mjs",
+    "dev": "tsup --watch",
+    "notices": "node scripts/build-notices.mjs",
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "commander": "^15.1.0",
+    "confusables": "^1.1.1",
+    "damerau-levenshtein": "^1.0.8",
+    "p-limit": "^7.3.3",
+    "picocolors": "^1.1.1",
+    "smol-toml": "^1.9.1"
+  },
+  "devDependencies": {
+    "@types/damerau-levenshtein": "^1.0.2",
+    "@types/node": "^26.6.6",
+    "tsup": "^9.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
