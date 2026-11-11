@@ -28,6 +28,7 @@
   "files": [
     "dist",
     "LICENSE",
+    "README.zh-CN.md",
     "THIRD_PARTY_NOTICES.md"
   ],
   "engines": {

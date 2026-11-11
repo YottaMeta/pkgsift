@@ -1,0 +1,84 @@
+name: PkgSift
+description: Sift dependencies before install — catch hallucinated and typosquatted packages.
+branding:
+  icon: shield
+  color: purple
+
+inputs:
+  path:
+    description: Directory to scan
+    required: false
+    default: '.'
+  fail-on:
+    description: Exit non-zero on block, warn, or none
+    required: false
+    default: 'block'
+  version:
+    description: PkgSift version to run
+    required: false
+    default: '0.1.0'
+  comment:
+    description: Post or update a pull request comment
+    required: false
+    default: 'true'
+  github-token:
+    description: Token used to comment on the pull request
+    required: false
+    default: ''
+
+outputs:
+  report:
+    description: Path to the generated Markdown report
+    value: ${{ steps.scan.outputs.report }}
+  exit-code:
+    description: PkgSift exit code (0 clean, 1 findings, 2 incomplete)
+    value: ${{ steps.scan.outputs.exit-code }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - id: scan
+      shell: bash
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_VERSION: ${{ inputs.version }}
+      run: |
+        set +e
+        REPORT="${RUNNER_TEMP}/pkgsift-report.md"
+        npx --yes "@yottameta/pkgsift@${INPUT_VERSION}" scan "$INPUT_PATH" \
+          --format markdown --fail-on "$INPUT_FAIL_ON" > "$REPORT"
+        CODE=$?
+        echo "report=$REPORT" >> "$GITHUB_OUTPUT"
+        echo "exit-code=$CODE" >> "$GITHUB_OUTPUT"
+        cat "$REPORT" >> "$GITHUB_STEP_SUMMARY"
+        exit 0
+
+    - if: ${{ inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      continue-on-error: true
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token || github.token }}
+        REPORT: ${{ steps.scan.outputs.report }}
+        PR: ${{ github.event.pull_request.number }}
+        REPO: ${{ github.repository }}
+      run: |
+        set -e
+        MARKER="<!-- pkgsift-report -->"
+        BODY="${MARKER}"$'\n'"$(cat "$REPORT")"
+        ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+          --jq '.[] | select(.body | contains("<!-- pkgsift-report -->")) | .id' | head -n1)
+        if [ -n "$ID" ]; then
+          gh api -X PATCH "repos/$REPO/issues/comments/$ID" -f body="$BODY" >/dev/null
+        else
+          gh api -X POST "repos/$REPO/issues/$PR/comments" -f body="$BODY" >/dev/null
+        fi
+
+    - shell: bash
+      env:
+        CODE: ${{ steps.scan.outputs.exit-code }}
+      run: exit "${CODE:-0}"

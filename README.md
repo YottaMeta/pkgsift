@@ -5,6 +5,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 
+**English** | [简体中文](README.zh-CN.md)
+
 **Sift before you install.**
 
 PkgSift checks dependency manifests for packages that do not exist, names that look like typosquats, brand-new packages, and install-time scripts — using only public registry metadata. It runs before `npm install` / `pip install`, so hallucinated and slopsquatted dependencies never reach your lockfile.
@@ -33,6 +35,14 @@ npx @yottameta/pkgsift scan .
 # Scan a specific project and fail CI on warnings too
 npx @yottameta/pkgsift scan ./app --fail-on warn
 ```
+
+No install is needed first: PkgSift only reads manifests, then queries the registry. Scan before installing:
+
+```bash
+npx @yottameta/pkgsift scan . && npm install
+```
+
+A non-zero exit code means do not install yet. Fix the manifest, then rerun.
 
 Install it once per repo (the command stays `pkgsift`):
 
@@ -65,7 +75,32 @@ pkgsift scan . --format sarif > out.sarif
 
 An incomplete scan is never reported as a pass.
 
-### GitHub Code Scanning
+## GitHub Action
+
+```yaml
+name: PkgSift
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: YottaMeta/pkgsift@action-v1
+        with:
+          path: .
+          fail-on: block
+```
+
+The action writes the Markdown report to the job summary and creates or updates a PR comment. Fork PRs receive a read-only token, so the comment step is skipped; the scan still fails on blocking findings.
+
+### SARIF upload
 
 ```yaml
 - run: npx @yottameta/pkgsift scan . --format sarif --fail-on block > pkgsift.sarif
